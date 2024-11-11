@@ -1,0 +1,197 @@
+Vou criar exercícios práticos para te ajudar a entender o módulo HTTP em Node.js, com cada passo explicado para que você possa acompanhar e construir a lógica.
+
+---
+
+### Exercício 1: Criando um Servidor HTTP Básico
+
+**Objetivo**: Entender como criar um servidor HTTP que responde com uma mensagem simples ao acessar a página inicial.
+
+#### Passo a Passo
+
+1. **Importe o módulo HTTP**: O Node.js possui o módulo `http` integrado, que permite criar servidores. Comece importando-o.
+
+2. **Crie um servidor**: Use `http.createServer` para criar o servidor. Ele recebe uma função que é chamada sempre que uma requisição é feita ao servidor.
+
+3. **Defina uma resposta para o caminho raiz `/`**: Verifique se o caminho é `/` e o método é `GET`. Se for, envie uma mensagem de "Bem-vindo!".
+
+4. **Inicie o servidor**: Faça o servidor ouvir a porta 3000 e imprima uma mensagem no console para confirmar.
+
+#### Código de Solução
+
+```javascript
+const http = require('http');
+
+// Cria o servidor
+const server = http.createServer((req, res) => {
+   // Verifica se o caminho é '/' e o método é GET
+   if (req.method === 'GET' && req.url === '/') {
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end('Bem-vindo!');
+   } else {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Página não encontrada');
+   }
+});
+
+// Inicia o servidor na porta 3000
+server.listen(3000, () => {
+   console.log('Servidor rodando em http://localhost:3000');
+});
+```
+
+---
+
+### Exercício 2: Criando uma Nova Rota
+
+**Objetivo**: Aprender a lidar com múltiplas rotas no servidor para responder a diferentes URLs.
+
+#### Passo a Passo
+
+1. **Adicione uma nova rota**: Além de responder ao caminho `/`, vamos adicionar uma rota `/sobre` para mostrar informações sobre o servidor.
+
+2. **Verifique o caminho e o método**: No código do servidor, verifique se a URL é `/sobre` e o método é `GET`.
+
+3. **Envie a resposta**: Retorne uma mensagem de "Este é um servidor Node.js".
+
+#### Código de Solução
+
+```javascript
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+   if (req.method === 'GET' && req.url === '/') {
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end('Bem-vindo!');
+   } else if (req.method === 'GET' && req.url === '/sobre') {
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end('Este é um servidor Node.js');
+   } else {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Página não encontrada');
+   }
+});
+
+server.listen(3000, () => {
+   console.log('Servidor rodando em http://localhost:3000');
+});
+```
+
+---
+
+### Exercício 3: Lendo Dados de uma Requisição POST
+
+**Objetivo**: Aprender a capturar dados enviados no corpo de uma requisição POST.
+
+#### Passo a Passo
+
+1. **Adicione a rota `POST /mensagem`**: O servidor deve receber uma mensagem do usuário enviada pelo corpo da requisição.
+
+2. **Capture os dados**: Use `req.on('data')` para capturar os dados enviados e armazená-los em uma variável.
+
+3. **Finalize e envie a resposta**: Após receber todos os dados, responda com a mensagem que foi enviada.
+
+#### Código de Solução
+
+```javascript
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+   if (req.method === 'POST' && req.url === '/mensagem') {
+      let body = '';
+
+      // Captura os dados enviados
+      req.on('data', chunk => {
+         body += chunk.toString();
+      });
+
+      // Quando todos os dados são recebidos
+      req.on('end', () => {
+         res.writeHead(200, { 'Content-Type': 'text/plain' });
+         res.end(`Mensagem recebida: ${body}`);
+      });
+   } else {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Página não encontrada');
+   }
+});
+
+server.listen(3000, () => {
+   console.log('Servidor rodando em http://localhost:3000');
+});
+```
+
+---
+
+### Exercício 4: Respondendo com JSON
+
+**Objetivo**: Aprender a retornar respostas no formato JSON.
+
+#### Passo a Passo
+
+1. **Defina a rota `GET /dados`**: Configure uma nova rota para responder com dados no formato JSON.
+
+2. **Crie um objeto JavaScript**: Crie um objeto contendo propriedades como `nome`, `idade` e `profissao`.
+
+3. **Converta o objeto para JSON e envie como resposta**.
+
+#### Código de Solução
+
+```javascript
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+   if (req.method === 'GET' && req.url === '/dados') {
+      const data = {
+         nome: 'Maria',
+         idade: 25,
+         profissao: 'Desenvolvedora'
+      };
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(data));
+   } else {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Página não encontrada');
+   }
+});
+
+server.listen(3000, () => {
+   console.log('Servidor rodando em http://localhost:3000');
+});
+```
+
+---
+
+### Exercício 5: Simulando Exclusão com a Rota `DELETE`
+
+**Objetivo**: Entender o uso do método `DELETE` para simular exclusão de dados.
+
+#### Passo a Passo
+
+1. **Adicione a rota `DELETE /apagar`**: Configure o servidor para aceitar o método `DELETE` nesta rota.
+
+2. **Envie uma resposta de confirmação**: Retorne uma mensagem confirmando que o item foi "excluído".
+
+#### Código de Solução
+
+```javascript
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+   if (req.method === 'DELETE' && req.url === '/apagar') {
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end('Item excluído com sucesso');
+   } else {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Página não encontrada');
+   }
+});
+
+server.listen(3000, () => {
+   console.log('Servidor rodando em http://localhost:3000');
+});
+```
+
+---
+
+Esses exercícios com explicação passo a passo vão te ajudar a entender melhor como configurar um servidor HTTP, lidar com diferentes tipos de requisições e manipular dados usando Node.js. Se precisar de mais ajuda em alguma parte, estou aqui!
